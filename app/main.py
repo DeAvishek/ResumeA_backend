@@ -1,4 +1,4 @@
-from fastapi import FastAPI,APIRouter
-from app.routes.add_performance import router
+from fastapi import FastAPI
+from routes.performance import router
 server = FastAPI()
 server.include_router(router,prefix="/api")
