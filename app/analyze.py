@@ -96,7 +96,7 @@ def analyzer(Job_desc,resume_text):
         vectors = tf_idf.fit_transform([corpus_resume,corpus_jdsc])
         similarity_score = cosine_similarity(vectors[0],vectors[1])
         
-        totalScore = 0.8*similarity_score+sentiment_compund*.3
+        totalScore = (0.8*similarity_score+sentiment_compund*.3)*100
         return {"job_skill":jobdesc_skill,"resume_skill":resume_skill,"score":totalScore[0][0],"status":200}
     except Exception as e:
         raise HTTPException(status_code=500,detail=str(e))
