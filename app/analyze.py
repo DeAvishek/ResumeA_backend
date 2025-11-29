@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from bertsimilarity import BertSys
 def analyzer(Job_desc,resume_text):
     try:
         import re
@@ -40,7 +41,7 @@ def analyzer(Job_desc,resume_text):
         token_resume = [token.lemma_ for token in doc_resume if not token.is_stop]
         corpus_resume = ' '.join(token_resume)
         corpus_resume = re.sub(' +',' ',corpus_resume)
-            
+        
         '''STEP 3 SKILL MATCHING BY SPACY'''
         from spacy.matcher import Matcher
         import pandas as pd
@@ -64,7 +65,7 @@ def analyzer(Job_desc,resume_text):
 
         # Run matcher
         matches = matcher(doc1)
-
+        
         # Extract matched skills
         jobdesc_skill = set()
         for match_id,start, end in matches:
@@ -96,8 +97,16 @@ def analyzer(Job_desc,resume_text):
         vectors = tf_idf.fit_transform([corpus_resume,corpus_jdsc])
         similarity_score = cosine_similarity(vectors[0],vectors[1])
         
+        #--->BErt Semantic similarity
+        BertSimilarityScore = BertSys(corpus_jdsc,corpus_resume)
+        print(BertSimilarityScore)
         totalScore = (0.8*similarity_score+sentiment_compund*.3)*100
-        return {"job_skill":jobdesc_skill,"resume_skill":resume_skill,"score":totalScore[0][0],"status":200}
+        return {"job_skill":jobdesc_skill,
+                "resume_skill":resume_skill,
+                "score":totalScore[0][0],
+                "email":candidate_email,
+                "status":200}
+        
     except Exception as e:
         raise HTTPException(status_code=500,detail=str(e))
         
