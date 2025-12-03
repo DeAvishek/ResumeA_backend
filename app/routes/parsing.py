@@ -14,11 +14,9 @@ async def parsing_resume_jobdesc(jobdesc:str=Form(...),file:UploadFile = None):
                 text += page.get_text()
             doc.close()
             return analyzer(jobdesc,text)
-        #process this
-        #and return somethimg
     except Exception as e:
         print(e)
-        raise HTTPException(status_code=500,detail=str(e))
+        raise HTTPException(status_code=400,detail=str(e))
     
         
         

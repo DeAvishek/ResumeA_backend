@@ -5,7 +5,6 @@ from bson import ObjectId
 
 router = APIRouter()
 
-@router.post("/add/performance")
 async def add_performance(performance: Performance):
     try:
         result = performance_collection.insert_one(performance.dict())

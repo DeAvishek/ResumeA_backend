@@ -5,4 +5,4 @@ class Adminuser(BaseModel):
     email:str
     password:str
     createdAt:datetime = Field(default_factory=datetime.now)
-    
+

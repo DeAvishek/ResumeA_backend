@@ -1,5 +1,12 @@
 from fastapi import HTTPException
 from bertsimilarity import BertSys
+from models.performance import Performance
+from routes.performance import add_performance
+import math
+
+from spacy.matcher import Matcher
+import pandas as pd
+import numpy as np
 def analyzer(Job_desc,resume_text):
     try:
         import re
@@ -21,12 +28,13 @@ def analyzer(Job_desc,resume_text):
         corpus_jdsc=" ".join(filtered_token)
         
         '''STEP 2 CLEANING RESUME'''
+        candidate_email = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", resume_text)
         resume_text = re.sub('[^a-zA-Z]',' ',resume_text)
         resume_text = resume_text.strip()
         resume_text = resume_text.lower()
         resume_text = re.sub(r"[0-9]","",resume_text)
         resume_text = re.sub(r"(linkedin|github)","",resume_text)
-        resume_text = re.sub(r"link","",resume_text)
+        resume_text = re.sub(r"(Link|link)","",resume_text)
         resume_text = re.sub(r"(:|-)","",resume_text)
         resume_text = re.sub(r"\S+@\S+","",resume_text)
         resume_text = re.sub(r"(email|gmail|mail)","",resume_text)
@@ -34,7 +42,7 @@ def analyzer(Job_desc,resume_text):
         resume_text = re.sub(r"http?s://\S+","",resume_text)
         resume_text = re.sub(r"www\.\S+","",resume_text)
         resume_text = re.sub(r'[•*\-+]', '', resume_text)
-        candidate_email = re.findall(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", resume_text)
+        email = candidate_email[0]
         
         # remove stop words and lemmatized
         doc_resume = nlp(resume_text)
@@ -43,9 +51,7 @@ def analyzer(Job_desc,resume_text):
         corpus_resume = re.sub(' +',' ',corpus_resume)
         
         '''STEP 3 SKILL MATCHING BY SPACY'''
-        from spacy.matcher import Matcher
-        import pandas as pd
-        import numpy as np
+        
         
         #--->loading the Skill_set csv file
         skill_csv = pd.read_csv("skill_list.csv") 
@@ -97,16 +103,21 @@ def analyzer(Job_desc,resume_text):
         vectors = tf_idf.fit_transform([corpus_resume,corpus_jdsc])
         similarity_score = cosine_similarity(vectors[0],vectors[1])
         
-        #--->BErt Semantic similarity
+        '''Using bert Similarity score'''
+        #--->Bert Semantic similarity
         BertSimilarityScore = BertSys(corpus_jdsc,corpus_resume)
+        
         print(BertSimilarityScore)
+        print("candidate email" , email)
         totalScore = (0.8*similarity_score+sentiment_compund*.3)*100
+        performance_rec = Performance(candidate_mail=email,score=math.ceil(totalScore))
+        add_performance(performance=performance_rec)
+        # add_performance(performance=performance_record)
         return {"job_skill":jobdesc_skill,
                 "resume_skill":resume_skill,
                 "score":totalScore[0][0],
-                "email":candidate_email,
+                "email": email,
                 "status":200}
-        
     except Exception as e:
         raise HTTPException(status_code=500,detail=str(e))
         

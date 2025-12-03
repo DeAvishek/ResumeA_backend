@@ -13,7 +13,7 @@ def create_account(adminuser :Adminuser):
             raise HTTPException(status_code=400,detail="User exists")
         adminuser = adminuser.dict()
         new_user = admin_user_collection.insert_one(adminuser)
-        return {"message":"Account created","status":200}
+        return {"message":"Account created","status":200,"user":new_user}
     except Exception as e:
         raise HTTPException(status_code=500,detail=str(e))
         
