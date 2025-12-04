@@ -3,17 +3,18 @@ from bertsimilarity import BertSys
 from models.performance import Performance
 from routes.performance import add_performance
 import math
-
+import asyncio
 from spacy.matcher import Matcher
 import pandas as pd
 import numpy as np
-def analyzer(Job_desc,resume_text):
+import re
+import spacy
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+async def analyzer(Job_desc,resume_text):
     try:
-        import re
-        import spacy
-        from sklearn.feature_extraction.text import TfidfVectorizer
-        from sklearn.metrics.pairwise import cosine_similarity
-        from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+        
         
         '''STEP 1 CLEANING JOB_DESC'''
         # Cleaning the jobdesc
@@ -111,7 +112,7 @@ def analyzer(Job_desc,resume_text):
         print("candidate email" , email)
         totalScore = (0.8*similarity_score+sentiment_compund*.3)*100
         performance_rec = Performance(candidate_mail=email,score=math.ceil(totalScore))
-        add_performance(performance=performance_rec)
+        await add_performance(performance=performance_rec)
         # add_performance(performance=performance_record)
         return {"job_skill":jobdesc_skill,
                 "resume_skill":resume_skill,
