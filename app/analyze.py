@@ -3,7 +3,6 @@ from bertsimilarity import BertSys
 from models.performance import Performance
 from routes.performance import add_performance
 import math
-import asyncio
 from spacy.matcher import Matcher
 import pandas as pd
 import numpy as np
@@ -12,6 +11,7 @@ import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from getfinalscore import getFinalScore
 async def analyzer(Job_desc,resume_text):
     try:
         
@@ -52,7 +52,6 @@ async def analyzer(Job_desc,resume_text):
         corpus_resume = re.sub(' +',' ',corpus_resume)
         
         '''STEP 3 SKILL MATCHING BY SPACY'''
-        
         
         #--->loading the Skill_set csv file
         skill_csv = pd.read_csv("skill_list.csv") 
@@ -102,21 +101,20 @@ async def analyzer(Job_desc,resume_text):
         #-->TF-IDF count
         tf_idf = TfidfVectorizer()
         vectors = tf_idf.fit_transform([corpus_resume,corpus_jdsc])
-        similarity_score = cosine_similarity(vectors[0],vectors[1])
+        tf_idf_similarity_score = cosine_similarity(vectors[0],vectors[1])
         
         '''Using bert Similarity score'''
         #--->Bert Semantic similarity
         BertSimilarityScore = BertSys(corpus_jdsc,corpus_resume)
         
-        print(BertSimilarityScore)
         print("candidate email" , email)
-        totalScore = (0.8*similarity_score+sentiment_compund*.3)*100
+        totalScore = getFinalScore(BertSimilarityScore,tf_idf_similarity_score,sentiment_compund,len(resume_skill)/len(jobdesc_skill))
         performance_rec = Performance(candidate_mail=email,score=math.ceil(totalScore))
+        print(totalScore)
         await add_performance(performance=performance_rec)
-        # add_performance(performance=performance_record)
         return {"job_skill":jobdesc_skill,
                 "resume_skill":resume_skill,
-                "score":totalScore[0][0],
+                "score":totalScore,
                 "email": email,
                 "status":200}
     except Exception as e:
