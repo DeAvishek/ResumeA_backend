@@ -3,10 +3,19 @@ from routes.performance import router
 from routes.adminusers import router2
 from fastapi.middleware.cors import CORSMiddleware
 from routes.parsing import router3
+from dotenv import load_dotenv
+import os
+load_dotenv()
 server = FastAPI()
+env = os.getenv("ENV")
+if env =="dev":
+    frontendurl = os.getenv("FRONTEND_URL_DEV")
+else:
+    frontendurl = os.getenv("FRONTEND_URL_PROD")
+    
+
 origins = [
-    "http://localhost:3000",  # Next.js dev
-    # "https://yourfrontend.com"  # Production
+    frontendurl
 ]
 
 server.add_middleware(
