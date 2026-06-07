@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from routes.performance import router
-from routes.adminusers import router2
+from app.routes.performance import router
+from app.routes.adminusers import router2
 from fastapi.middleware.cors import CORSMiddleware
-from routes.parsing import router3
+from app.routes.parsing import router3
 from dotenv import load_dotenv
 import os
 load_dotenv()
