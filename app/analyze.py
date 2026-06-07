@@ -1,7 +1,7 @@
 from fastapi import HTTPException
-from bertsimilarity import BertSys
-from models.performance import Performance
-from routes.performance import add_performance
+from app.bertsimilarity import BertSys
+from app.models.performance import Performance
+from app.routes.performance import add_performance
 import math
 from spacy.matcher import Matcher
 import pandas as pd
@@ -11,7 +11,7 @@ import spacy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from getfinalscore import getFinalScore
+from app.getfinalscore import getFinalScore
 async def analyzer(Job_desc,resume_text):
     try:
         

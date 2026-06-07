@@ -1,7 +1,7 @@
 from fastapi import APIRouter,HTTPException
-from models.admin import Adminuser
-from my_collections.performance_collection import admin_user_collection
-from models.login import Loginuser
+from app.models.admin import Adminuser
+from app.my_collections.performance_collection import admin_user_collection
+from app.models.login import Loginuser
 
 router2 = APIRouter()
 

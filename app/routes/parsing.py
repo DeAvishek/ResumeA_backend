@@ -1,5 +1,5 @@
 from fastapi import APIRouter,UploadFile,Form,HTTPException
-from analyze import analyzer
+from app.analyze import analyzer
 import fitz
 # import pymupdf
 router3 = APIRouter()

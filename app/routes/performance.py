@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from models.performance import Performance
-from my_collections.performance_collection import performance_collection
+from app.models.performance import Performance
+from app.my_collections.performance_collection import performance_collection
 from bson import ObjectId
 
 router = APIRouter()
