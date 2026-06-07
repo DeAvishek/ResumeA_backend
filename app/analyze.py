@@ -54,7 +54,7 @@ async def analyzer(Job_desc,resume_text):
         '''STEP 3 SKILL MATCHING BY SPACY'''
         
         #--->loading the Skill_set csv file
-        skill_csv = pd.read_csv("skill_list.csv") 
+        skill_csv = pd.read_csv("app/skill_list.csv") 
         skill_array = np.array(skill_csv['skill'])
         
         #--->matching skills from skill list and jobdesc
