@@ -1,5 +1,4 @@
 from transformers import BertTokenizer, BertModel
-import torch
 from sklearn.metrics.pairwise import cosine_similarity
 def BertSys(resume,job_desc):
     
