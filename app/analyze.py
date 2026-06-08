@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from app.bertsimilarity import BertSys
 from app.models.performance import Performance
 from app.routes.performance import add_performance
 import math
@@ -103,12 +102,10 @@ async def analyzer(Job_desc,resume_text):
         vectors = tf_idf.fit_transform([corpus_resume,corpus_jdsc])
         tf_idf_similarity_score = cosine_similarity(vectors[0],vectors[1])
         
-        '''Using bert Similarity score'''
-        #--->Bert Semantic similarity
-        BertSimilarityScore = BertSys(corpus_jdsc,corpus_resume)
+
         
         print("candidate email" , email)
-        totalScore = getFinalScore(BertSimilarityScore,tf_idf_similarity_score,sentiment_compund,len(resume_skill)/len(jobdesc_skill))
+        totalScore = getFinalScore(tf_idf_similarity_score,sentiment_compund,len(resume_skill)/len(jobdesc_skill))
         performance_rec = Performance(candidate_mail=email,score=math.ceil(totalScore))
         print(totalScore)
         await add_performance(performance=performance_rec)
